@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "DoublyLinkedList.h"
 using namespace std;
 
 
@@ -43,10 +44,49 @@ struct logs{
 
   }
 
+  bool operator>=(logs f2){
+
+    bool resp;
+    if(convertir() >= f2.convertir()){
+
+      resp = true;
+
+    }
+
+    else{
+
+      resp = false;
+
+    }
+
+    return resp;
+
+  }
+
+
   bool operator<(logs f2){
 
     bool resp;
     if(convertir() < f2.convertir()){
+
+      resp = true;
+
+    }
+
+    else{
+
+      resp = false;
+
+    }
+
+    return resp;
+
+  }
+
+  bool operator<=(logs f2){
+
+    bool resp;
+    if(convertir() <= f2.convertir()){
 
       resp = true;
 
@@ -262,13 +302,13 @@ string logs :: str(){
 
 //Función que recibe la lista y el dato inicial a buscar, y lo compara uno por uno de izquierda a derecha para encontrar uno que sea mayor. Retorna la posición del valor inicial del vector para comenzar a desplegar en el rango.
 template <class T>
-int busquedaSecuencialPrimero(vector<T> lista, T data){
+int busquedaSecuencialPrimero(DoublyLinkedList<T> lista, T data){
 
   int pos;
 
-  for(int i = 0; i < lista.size(); i++){
+  for(int i = 0; i < lista.getSize(); i++){
 
-    if(lista[i] > data){
+    if(lista.getData(i) > data){
 
       return i;
 
@@ -280,15 +320,14 @@ int busquedaSecuencialPrimero(vector<T> lista, T data){
 
 }
 
-//Función que recibe la lista y el dato final a buscar, y lo compara uno por uno de derecha a izquierda para encontrar uno que sea menor. Retorna la posición del valor final del vector para comenzar a desplegar en el rango.
 template <class T>
-int busquedaSecuencialUltimo(vector<T> lista, T data){
+int busquedaSecuencialUltimo(DoublyLinkedList<T> lista, T data){
 
   int pos;
 
-  for(int i = lista.size() - 1; i > 0; i--){
+  for(int i = lista.getSize() - 1; i > 0; i--){
 
-    if(lista[i] < data){
+    if(lista.getData(i) < data){
 
       return i;
 
@@ -304,7 +343,7 @@ int busquedaSecuencialUltimo(vector<T> lista, T data){
 template <class T>
 void imprimir(vector<T> lista){
 
-  for(int i = 0; i < lista.size(); i++){
+  for(int i = 0; i < lista.getSize(); i++){
 
     cout << lista[i] << endl;
 
@@ -312,98 +351,85 @@ void imprimir(vector<T> lista){
 
 }
 
-template<class T>
-void merge(vector<T> &lista, int inicio, int medio, int fin){
+//Busqueda binaria intento (no pude pero casi)
+/*int getClosest1(vector<logs> &lista, int primero, int segundo, logs data){ 
 
-  int size1 = medio - inicio + 1;
+  if (data.convertir() - lista[primero].convertir() >= lista[segundo].convertir() - data.convertir()){ 
 
-  int size2 = fin - medio;
-
-  vector<T> A;
-  vector<T> B;
-
-  for(int iN = 0; iN < size1; iN++){
-
-    A.push_back(lista[iN + inicio]); 
+    return segundo; 
 
   }
 
-  for(int iC = 0; iC < size2; iC++){
+  else{
 
-    B.push_back(lista[iC + medio + 1]); 
-        
+    return primero;  
+
   }
 
-  int iN = 0;
-  int iC = 0;
-  int iK = inicio;
+} 
 
+int busquedaBinaria1(vector<logs> &lista, int n, logs data){
 
-  while(iN < size1 && iC < size2){ 
+  if (data <= lista[0]){
 
-    if(A[iN] < B[iC]) { 
+    return 0; 
 
-      lista[iK] = A[iN]; 
-      iN++; 
+  }
+
+  if (data >= lista[n - 1]){
+
+    return n - 1;
+
+  }
+
+  int min = 0, max = n, mid = 0;
+
+  while (min < max){ 
+
+    mid = (min + max) / 2; 
+
+    if (lista[mid] == data){
+
+      return mid; 
+
+    }
+
+    if (data < lista[mid]){ 
+
+      if (mid > 0 && data > lista[mid - 1]){
+
+        return getClosest1(lista, mid - 1, mid, data);
+
+      } 
+
+      max = mid; 
 
     } 
 
     else { 
 
-      lista[iK] = B[iC]; 
-      iC++; 
+      if (mid < n - 1 && data < lista[mid + 1]) {
+
+        return getClosest1(lista, mid, mid + 1, data);
+
+      }
+
+      min = mid + 1;  
 
     } 
 
-    iK++; 
-
-  }
-
-  while(iN < size1) { 
-
-    lista[iK] = A[iN]; 
-    iN++; 
-    iK++; 
-
-  } 
-
-  while(iC < size2) { 
-
-    lista[iK] = B[iC]; 
-    iC++; 
-    iK++; 
-
   } 
  
-}
 
-//Complejidad de O(n * log n) 
-template<class T>
-vector<T> mergeSort(vector<T> &lista, int inicio, int fin){
+} 
 
-
-  if(inicio < fin){
-
-    int medio = (fin + inicio) / 2;
-
-    mergeSort(lista, inicio, medio);
-
-    mergeSort(lista, medio + 1, fin);
-
-    merge(lista, inicio, medio, fin);
-
-  }
-
-  return lista;
-
-}
-
+*/
 
 int main() {
 
   string line;
 
-  vector<logs> dataI;
+  DoublyLinkedList<logs> dataI;
 
   string sMes, sDia, sHora; 
 
@@ -423,7 +449,7 @@ int main() {
     getline(input, mensaje);
 
     logs log(mes, dia, hora, ip, mensaje);
-    dataI.push_back(log);
+    dataI.addLast(log);
 
   }
 
@@ -431,9 +457,9 @@ int main() {
 
   inferior = 0;
 
-  superior = dataI.size() - 1;
+  superior = dataI.getSize() - 1;
 
-  dataI = mergeSort(dataI, inferior, superior);
+  dataI.sort();
 
   cout << "Lista ordenada:" << endl << endl;
 
@@ -442,11 +468,12 @@ int main() {
   output.open("bitacoraOrdenada.txt");
 
   //Se pasa la nueva bitacora ordenada al archivo bitacoraOrdenada.txt
-  for(int iN = 0; iN <= dataI.size() - 1; iN ++){
+  
+  for(int iN = 0; iN <= dataI.getSize() - 1; iN ++){
 
-    output << dataI[iN].str() << endl;
+    output << dataI.getData(iN).str() << endl;
 
-    cout << dataI[iN].str() << endl;
+    cout << dataI.getData(iN).str() << endl;
 
   }
 
@@ -544,6 +571,7 @@ int main() {
   primer.dia = sDia;
   primer.hora = sHora;
 
+  
   pos1 = busquedaSecuencialPrimero(dataI, primer);
   
   cout << endl << "Búsqueda segundo dato" << endl << endl;
@@ -645,9 +673,10 @@ int main() {
 
   for(int iN = pos1; iN <= pos2; iN ++){
 
-    cout << dataI[iN].str() << endl;
+    cout << dataI.getData(iN).str() << endl;
 
   }
+  
 
   return 0;
 
