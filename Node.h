@@ -1,46 +1,27 @@
-#pragma once
-
-#include <iostream>
-using namespace std;
-#include <string>
-
+#pragma once 
 template<class T>
-struct Node{
+struct Node {
 
-  T data; //Default será Nulo
-  Node<T>* prev;//Default será Nulo
-  Node<T>* next;//Default será Nulo
-
-  Node();
+  T data;
+  Node<T> *next;
+  Node<T> *prev;
   Node(T data);
-  Node(T data, Node<T>* prev, Node<T>* next);
-  
+  Node(T data, Node<T> *next, Node<T>* prev);
+
 };
 
-
 template<class T>
-Node<T> :: Node(){
-
-  data = NULL;
-  next = NULL;
-  prev = NULL;
-
+Node<T>::Node(T data) {
+    this->data = data;
+    this->next = NULL;
+    this->prev = NULL;
 }
 
 template<class T>
-Node<T> :: Node(T data){
-
-  this->data = data;
-  next = NULL;
-  prev = NULL;
-
+Node<T>::Node(T data, Node<T>* next, Node<T>* prev) {
+    this->data = data;
+    this->next = next;
+    this->prev = prev;
 }
 
-template<class T>
-Node<T> :: Node(T data, Node<T>* prev, Node<T>* next){
 
-  this->data = data;
-  this->next = next;
-  this->prev = prev;
-
-}

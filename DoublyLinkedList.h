@@ -3,6 +3,7 @@
 
 #include "Node.h"
 #include "Queue.h"
+using namespace std;
 
 template<class T>
 class DoublyLinkedList{
@@ -17,6 +18,9 @@ class DoublyLinkedList{
 
   public:
 
+    void operator=(initializer_list<T> list);
+    void operator=(DoublyLinkedList<T> list);
+    T& operator[](int index);
     DoublyLinkedList();
     void addFirst(T data);
     void addLast(T data);
@@ -26,8 +30,85 @@ class DoublyLinkedList{
     T getData(int pos);
     void updateAt(int pos, T newData);
     int getSize();
+    void clear();
+    void deleteLast();
+    
 
 };
+
+template<class T>
+void DoublyLinkedList<T>::clear() {
+    int i = 1;
+    while (i<=size) {
+        Node<T>* aux = head;
+        head = aux->next;
+        delete aux;
+        i++;
+    }
+    size = 0;
+    tail = NULL;
+}
+
+
+template<class T>
+T& DoublyLinkedList<T>::operator[](int index) {
+    if (index >= 1 && index <= size) {
+        if (index <= size / 2) {
+            Node<T>* aux = head;
+            int i = 1; // The list starts with 1
+            while (aux != NULL) {
+                if (i == index) {
+                    return aux->data;
+                }
+                aux = aux->next;
+                i++;
+            }
+        } else {
+            Node<T>* aux = tail;
+            int i = size; // The list starts with 1
+            while (aux != NULL) {
+                if (i == index) {
+                    return aux->data;
+                }
+                aux = aux->prev;
+                i--;
+            }
+        }
+    }
+    throw out_of_range("Invalid position");
+}
+
+template<class T>
+void DoublyLinkedList<T>::operator=(initializer_list<T> list) {
+    if (isEmpty()) {
+        for (T i : list) {
+            addLast(i);
+        }
+    } else {
+        throw runtime_error("Error: DoublyLinkedList no esta vacia");
+    }
+}
+
+template<class T>
+void DoublyLinkedList<T>::deleteLast(){
+  if (!isEmpty()){
+    Node<T>* aux = tail;
+    tail = tail->prev;
+    if (tail == NULL){ //if the list is emptied
+        head = NULL;
+    }
+    delete aux;
+    size--;
+  }
+}
+
+template<class T>
+void DoublyLinkedList<T>::operator=(DoublyLinkedList<T> list) {
+    clear();
+    for (int i=1; i<=list.size; i++) {
+        addLast(list[i]);
+    }
+}
 
 //Retorna el tamaño de la lista
 template<class T>

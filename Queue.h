@@ -2,6 +2,7 @@
 #define Queue_h
 
 #include "Node.h"
+using namespace std;
 
 template<class T>
 class Queue{

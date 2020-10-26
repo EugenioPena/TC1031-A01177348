@@ -2,15 +2,14 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "DoublyLinkedList.h"
+#include "Heap.h"
 using namespace std;
-
 
 //Struct que almacena los datos de la bitácora, donde cada línea es un logs
 struct logs{
 
   //Los atributos de cada logs
-  string mes, dia, sDia, hora, ip, razon, sMes;
+  string mes, dia, sDia, hora, ip, port, razon, sMes;
 
   //Constructor por parámetros
   logs(string, string, string, string, string);
@@ -28,7 +27,7 @@ struct logs{
   bool operator>(logs f2){
 
     bool resp;
-    if(convertir() > f2.convertir()){
+    if(ip > f2.ip){
 
       resp = true;
 
@@ -47,7 +46,7 @@ struct logs{
   bool operator>=(logs f2){
 
     bool resp;
-    if(convertir() >= f2.convertir()){
+    if(ip >= f2.ip){
 
       resp = true;
 
@@ -67,7 +66,7 @@ struct logs{
   bool operator<(logs f2){
 
     bool resp;
-    if(convertir() < f2.convertir()){
+    if(ip < f2.ip){
 
       resp = true;
 
@@ -86,7 +85,7 @@ struct logs{
   bool operator<=(logs f2){
 
     bool resp;
-    if(convertir() <= f2.convertir()){
+    if(ip <= f2.ip){
 
       resp = true;
 
@@ -105,7 +104,7 @@ struct logs{
   bool operator==(logs f2){
 
     bool resp;
-    if(convertir() == f2.convertir()){
+    if(ip == f2.ip){
 
       resp = true;
 
@@ -128,8 +127,12 @@ logs :: logs(string mes, string dia, string hora, string ip, string razon){
   this->mes = mes;
   this->dia = dia;
   this->hora = hora;
-  this->ip = ip;
   this->razon = razon;
+
+  int pos = ip.find(":");
+  string sIp = ip;
+  port = sIp.substr(pos + 1);
+  this->ip = sIp.substr(0, pos);
 
 }
 
@@ -139,6 +142,7 @@ logs :: logs(){
   dia = "Dia";
   hora = "Hora";
   ip = "Ip";
+  port = "port";
   razon = "Razon";
 
 }
@@ -294,138 +298,180 @@ int logs :: convertir(){
 
 string logs :: str(){
 
-  string str = mes + " " + dia + " " + hora + " " + ip + " " + razon;
+  string str = mes + " " + dia + " " + hora + " " + ip + ":" + port + " " + razon;
 
   return str;
 
 }
 
-//Función que recibe la lista y el dato inicial a buscar, y lo compara uno por uno de izquierda a derecha para encontrar uno que sea mayor. Retorna la posición del valor inicial del vector para comenzar a desplegar en el rango.
-template <class T>
-int busquedaSecuencialPrimero(DoublyLinkedList<T> lista, T data){
+struct ips{
 
-  int pos;
+  string direccion;
+  int cantidad;
 
-  for(int i = 0; i < lista.getSize(); i++){
+  ips(string direccion, int cantidad);
 
-    if(lista.getData(i) > data){
+  ips();
 
-      return i;
+  string str();
 
-    }
+  bool operator>(ips f2){
 
-  }
+    bool resp;
+    if(cantidad > f2.cantidad){
 
-  throw runtime_error("El dato no se encuentra");
-
-}
-
-template <class T>
-int busquedaSecuencialUltimo(DoublyLinkedList<T> lista, T data){
-
-  int pos;
-
-  for(int i = lista.getSize() - 1; i > 0; i--){
-
-    if(lista.getData(i) < data){
-
-      return i;
+      resp = true;
 
     }
 
-  }
+    else{
 
-  throw runtime_error("El dato no se encuentra");
-
-}
-
-//Función que imprime vectores
-template <class T>
-void imprimir(vector<T> lista){
-
-  for(int i = 0; i < lista.getSize(); i++){
-
-    cout << lista[i] << endl;
-
-  }
-
-}
-
-//Busqueda binaria intento (no pude pero casi)
-/*int getClosest1(vector<logs> &lista, int primero, int segundo, logs data){ 
-
-  if (data.convertir() - lista[primero].convertir() >= lista[segundo].convertir() - data.convertir()){ 
-
-    return segundo; 
-
-  }
-
-  else{
-
-    return primero;  
-
-  }
-
-} 
-
-int busquedaBinaria1(vector<logs> &lista, int n, logs data){
-
-  if (data <= lista[0]){
-
-    return 0; 
-
-  }
-
-  if (data >= lista[n - 1]){
-
-    return n - 1;
-
-  }
-
-  int min = 0, max = n, mid = 0;
-
-  while (min < max){ 
-
-    mid = (min + max) / 2; 
-
-    if (lista[mid] == data){
-
-      return mid; 
+      resp = false;
 
     }
 
-    if (data < lista[mid]){ 
+    return resp;
 
-      if (mid > 0 && data > lista[mid - 1]){
+  }
 
-        return getClosest1(lista, mid - 1, mid, data);
+  bool operator>=(ips f2){
 
-      } 
+    bool resp;
+    if(cantidad >= f2.cantidad){
 
-      max = mid; 
+      resp = true;
 
-    } 
+    }
 
-    else { 
+    else{
 
-      if (mid < n - 1 && data < lista[mid + 1]) {
+      resp = false;
 
-        return getClosest1(lista, mid, mid + 1, data);
+    }
+
+    return resp;
+
+  }
+
+
+  bool operator<(ips f2){
+
+    bool resp;
+    if(cantidad < f2.cantidad){
+
+      resp = true;
+
+    }
+
+    else{
+
+      resp = false;
+
+    }
+
+    return resp;
+
+  }
+
+  bool operator<=(ips f2){
+
+    bool resp;
+    if(cantidad <= f2.cantidad){
+
+      resp = true;
+
+    }
+
+    else{
+
+      resp = false;
+
+    }
+
+    return resp;
+
+  }
+
+  bool operator==(ips f2){
+
+    bool resp;
+    if(cantidad == f2.cantidad){
+
+      resp = true;
+
+    }
+
+    else{
+
+      resp = false;
+
+    }
+
+    return resp;
+
+  }
+
+
+};
+
+ips :: ips(string direccion, int cantidad){
+
+  this->direccion = direccion;
+  this->cantidad = cantidad;
+
+}
+
+ips :: ips(){
+
+  direccion = "IP";
+  cantidad = 0;
+
+}
+
+string ips :: str(){
+
+  string sCantidad = to_string(cantidad);
+
+  string str = "Ip: " + direccion + " Cantidad de veces: " + sCantidad;
+
+  return str;
+
+}
+
+
+
+
+
+template<class T>
+void HeapSort(DoublyLinkedList<T> &list, string order = "ascending"){
+
+  if(!list.isEmpty()){
+
+    Heap<T> heapAux(list);
+    list.clear();
+    while(!heapAux.isEmpty()){
+
+      T aux = heapAux.remove();
+
+      if(order == "ascending"){
+
+        list.addFirst(aux);
+
+      }else{
+
+        list.addLast(aux);
 
       }
 
-      min = mid + 1;  
 
-    } 
+    }
 
-  } 
- 
+  }
 
-} 
+}
 
-*/
-
-int main() {
+using namespace std;
+int main(){
 
   string line;
 
@@ -433,13 +479,11 @@ int main() {
 
   string sMes, sDia, sHora; 
 
-  int inferior, superior;
-  
 	ifstream input;
 
-	input.open("bitacora.txt");
+	input.open("bitacora2.txt");
+
   string mes, dia, hora, ip, mensaje;
-  int pos1, pos2;
 
   //Lee el archivo y pasa cada línea a un elemento del vector
 
@@ -455,229 +499,79 @@ int main() {
 
   input.close();
 
-  inferior = 0;
+  HeapSort(dataI);
 
-  superior = dataI.getSize() - 1;
+  int seleccion;
 
-  dataI.sort();
+  cout << "Ingrese el número 1 para ver la lista ordenada: ";
+
+  cin >> seleccion;
+
+  while(seleccion != 1){
+
+    cout << "Ingrese el número 1 para ver la lista ordenada: ";
+
+    cin >> seleccion;
+
+  }
 
   cout << "Lista ordenada:" << endl << endl;
 
-  ofstream output;
+  int veces = 0;
 
-  output.open("bitacoraOrdenada.txt");
-
-  //Se pasa la nueva bitacora ordenada al archivo bitacoraOrdenada.txt
+  DoublyLinkedList<ips> list;
   
-  for(int iN = 0; iN <= dataI.getSize() - 1; iN ++){
-
-    output << dataI.getData(iN).str() << endl;
+  for(int iN = 0; iN <= dataI.getSize() - 1; iN++){
 
     cout << dataI.getData(iN).str() << endl;
 
-  }
+    veces = veces + 1;
 
-  output.close();
+    if(dataI.getData(iN).ip != dataI.getData(iN - 1).ip){
 
-  cout << endl << "Búsqueda primer dato" << endl << endl;
+      ips ip(dataI.getData(iN - 1).ip, veces - 1);
+      list.addLast(ip);
+      veces = 1;
 
-  cout << "Ingrese el mes en número (1 - 12): ";
-
-  cin >> sMes;
-
-  if(sMes == "1"){
-
-    sMes = "Jan";
+    }
 
   }
 
-  else if(sMes == "2"){
+  cout << "Ingrese el número 1 para ver la lista de ips agrupadas: ";
 
-    sMes = "Feb";
+  cin >> seleccion;
 
-  }
+  while(seleccion != 1){
 
-  else if(sMes == "3"){
+    cout << "Ingrese el número 1 para ver la lista de ips agrupadas: ";
 
-    sMes = "Mar";
-
-  }
-
-  else if(sMes == "4"){
-
-    sMes = "Apr";
+    cin >> seleccion;
 
   }
 
-  else if(sMes == "5"){
+  cout << endl << "Lista de ips agrupadas: " << endl;
 
-    sMes = "May";
+  for(int iN = 0; iN <= list.getSize() - 1; iN++){
 
-  }
-
-  else if(sMes == "6"){
-
-    sMes = "Jun";
+    cout << list.getData(iN).str() << endl;
 
   }
 
-  else if(sMes == "7"){
+  Heap<ips> heap(list);
 
-    sMes = "Jul";
+  cout << "Ingrese el número 1 para ver las 5 ips más repetidas en orden: ";
 
-  }
+  cin >> seleccion;
 
-  else if(sMes == "8"){
+  while(seleccion != 1){
 
-    sMes = "Aug";
+    cout << "Ingrese el número 1 para ver las 5 ips más repetidas en orden: ";
 
-  }
-
-  else if(sMes == "9"){
-
-    sMes = "Sep";
+    cin >> seleccion;
 
   }
 
-  else if(sMes == "10"){
+  cout << endl << "Las 5 ips más repetidas en orden son: " << endl << heap.remove().str() << endl << heap.remove().str() << endl << heap.remove().str() << endl << heap.remove().str() << endl << heap.remove().str();
 
-    sMes = "Oct";
-
-  }
-
-  else if(sMes == "11"){
-
-    sMes = "Nov";
-
-  }
-
-  else if(sMes == "12"){
-
-    sMes = "Dec";
-
-  }
-
-  cout << "Ingrese el número del día: ";
-
-  cin >> sDia;
-
-  cout << "Ingrese la hora en formato 00:00:00: ";
-
-  cin >> sHora;
-
-  logs primer;
-
-  primer.mes = sMes;
-  primer.dia = sDia;
-  primer.hora = sHora;
-
-  
-  pos1 = busquedaSecuencialPrimero(dataI, primer);
-  
-  cout << endl << "Búsqueda segundo dato" << endl << endl;
-
-  cout << "Ingrese el mes en número (1 - 12): ";
-
-
-  cin >> sMes;
-
-  if(sMes == "1"){
-
-    sMes = "Jan";
-
-  }
-
-  else if(sMes == "2"){
-
-    sMes = "Feb";
-
-  }
-
-  else if(sMes == "3"){
-
-    sMes = "Mar";
-
-  }
-
-  else if(sMes == "4"){
-
-    sMes = "Apr";
-
-  }
-
-  else if(sMes == "5"){
-
-    sMes = "May";
-
-  }
-
-  else if(sMes == "6"){
-
-    sMes = "Jun";
-
-  }
-
-  else if(sMes == "7"){
-
-    sMes = "Jul";
-
-  }
-
-  else if(sMes == "8"){
-
-    sMes = "Aug";
-
-  }
-
-  else if(sMes == "9"){
-
-    sMes = "Sep";
-
-  }
-
-  else if(sMes == "10"){
-
-    sMes = "Oct";
-
-  }
-
-  else if(sMes == "11"){
-
-    sMes = "Nov";
-
-  }
-
-  else if(sMes == "12"){
-
-    sMes = "Dec";
-
-  }
-
-  cout << "Ingrese el número del día: ";
-
-  cin >> sDia;
-
-  cout << "Ingrese la hora en formato 00:00:00: ";
-
-  cin >> sHora;
-
-  logs ultimo;
-
-  ultimo.mes = sMes;
-  ultimo.dia = sDia;
-  ultimo.hora = sHora;
-
-  pos2 = busquedaSecuencialUltimo(dataI, ultimo);
-
-  cout << endl;
-
-  for(int iN = pos1; iN <= pos2; iN ++){
-
-    cout << dataI.getData(iN).str() << endl;
-
-  }
-  
-
-  return 0;
 
 }
